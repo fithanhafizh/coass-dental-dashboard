@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dental Coass Master Dashboard</title>
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-indigo-900 text-white p-4 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <i data-lucide="activity" class="w-8 h-8 text-indigo-400"></i>
+        <div>
+          <h1 class="text-xl font-bold leading-tight">CoassDental Hub</h1>
+          <p class="text-xs text-indigo-200">Patient Tracker & Requirement Logbook</p>
+        </div>
+      </div>
+      <div class="text-right text-xs">
+        <span class="block font-semibold">UKMP2DG Target: Dec 2026</span>
+        <span class="bg-indigo-800 px-2 py-0.5 rounded text-indigo-300">Status: Active</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- LEFT COLUMN: Requirement Progress -->
+    <section class="md:col-span-1 space-y-6">
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-slate-900">
+          <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i> Progres Requirement
+        </h2>
+
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-sm font-medium mb-1">
+              <span>Konservasi (GIC/Class IV)</span>
+              <span class="text-indigo-600 font-bold">60%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5">
+              <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 60%"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">3/5 Kasus Selesai</p>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm font-medium mb-1">
+              <span>Periodonsia (SRP)</span>
+              <span class="text-emerald-600 font-bold">80%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5">
+              <div class="bg-emerald-500 h-2.5 rounded-full" style="width: 80%"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">4/5 Kasus Selesai</p>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm font-medium mb-1">
+              <span>Bedah Mulut (Eksodontia)</span>
+              <span class="text-amber-600 font-bold">40%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5">
+              <div class="bg-amber-500 h-2.5 rounded-full" style="width: 40%"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">2/5 Kasus Selesai</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Treatment Plan Assistant -->
+      <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold flex items-center gap-2 text-indigo-300 mb-2">
+          <i data-lucide="sparkles" class="w-5 h-5"></i> AI Treatment Assistant
+        </h3>
+        <p class="text-xs text-slate-300 mb-3">Masukkan diagnosis/keluhan pasien untuk rekomendasi tatalaksana cepat.</p>
+        <textarea id="ai-input" class="w-full text-xs p-2 rounded bg-slate-800 text-slate-100 border border-slate-700 focus:outline-none focus:border-indigo-500" rows="3" placeholder="Contoh: Pulpitis ireversibel simptomatik gigi 36..."></textarea>
+        <button onclick="generatePlan()" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-xs py-2 rounded font-semibold transition">Rekomendasikan SOP</button>
+        <div id="ai-output" class="hidden mt-3 p-3 bg-slate-800/80 rounded text-xs border border-indigo-500/30 text-slate-200"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: Patient Logbook & Action -->
+    <section class="md:col-span-2 space-y-6">
+      <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <div class="relative w-2/3">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+          <input type="text" placeholder="Cari pasien, No. RM, diagnosa..." class="w-full text-sm pl-9 pr-4 py-2 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:border-indigo-500">
+        </div>
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-4 h-4"></i> Pasien Baru
+        </button>
+      </div>
+
+      <!-- Odontogram Chart Preview -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+        <h3 class="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">
+          <i data-lucide="tooth" class="w-4 h-4 text-indigo-600"></i> Odontogram Digital (Visual Quick Charting)
+        </h3>
+        <div class="flex flex-wrap gap-2 text-xs">
+          <button class="px-2.5 py-1.5 border rounded bg-indigo-50 border-indigo-300 font-bold text-indigo-700">11: Caries</button>
+          <button class="px-2.5 py-1.5 border rounded bg-emerald-50 border-emerald-300 font-bold text-emerald-700">21: Restored</button>
+          <button class="px-2.5 py-1.5 border rounded bg-rose-50 border-rose-300 font-bold text-rose-700">36: RCT</button>
+          <button class="px-2.5 py-1.5 border rounded bg-slate-50 border-slate-200 font-bold text-slate-600">46: Missing</button>
+        </div>
+      </div>
+
+      <!-- Patient Cards List -->
+      <div class="space-y-4">
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:border-indigo-300 transition">
+          <div class="flex justify-between items-start">
+            <div class="flex gap-4">
+              <div class="w-12 h-12 bg-indigo-100 text-indigo-700 font-bold rounded-full flex items-center justify-center text-lg">
+                RM
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900">Ny. Sukaesih <span class="text-xs font-normal text-slate-500">(42 thn)</span></h4>
+                <p class="text-xs text-slate-500">No. RM: 00-12-89 • Departemen: <span class="font-semibold text-indigo-600">Periodonsia</span></p>
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full font-semibold">#PasienKooperatif</span>
+                  <span class="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-semibold">Periodontitis Stage II</span>
+                </div>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+              Kunjungan 2: SRP RA
+            </span>
+          </div>
+
+          <hr class="my-4 border-slate-100">
+
+          <div class="flex justify-between items-center text-xs">
+            <div class="flex items-center gap-4 text-slate-500">
+              <span class="flex items-center gap-1"><i data-lucide="image" class="w-3.5 h-3.5"></i> 3 Foto (Intraoral/RM)</span>
+              <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Kontrol: Besok, 09:00</span>
+            </div>
+            <div class="flex gap-2">
+              <button class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-md font-medium hover:bg-slate-200">Detail RM</button>
+              <button class="px-3 py-1.5 bg-emerald-600 text-white rounded-md font-medium hover:bg-emerald-700 flex items-center gap-1">
+                <i data-lucide="message-square" class="w-3.5 h-3.5"></i> WA Pasien
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    lucide.createIcons();
+
+    // MASUKKAN API KEY SUPABASE KAMU DI SINI:
+    const SUPABASE_URL = https://ujhmiqcgpchxpiwyqtjp.supabase.co/rest/v1/;
+    const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqaG1pcWNncGNoeHBpd3lxdGpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1NjE5NzgsImV4cCI6MjEwNjEzNzk3OH0.mt35cadx1IXAcuoA8t4BCMIu9X9VoHRvQ8MkV9FYYnI;
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function generatePlan() {
+      const input = document.getElementById('ai-input').value;
+      const output = document.getElementById('ai-output');
+      if (!input) return;
+      
+      output.classList.remove('hidden');
+      output.innerHTML = `<strong>Rekomendasi Tatalaksana:</strong><br>
+      1. Anamnesis & Tes Vitalitas (Sondasi/Termal)<br>
+      2. Rontgen Periapikal (Apeks Gigi)<br>
+      3. Extirpasi jaringan pulpa & Anestesi Lokal<br>
+      4. Dressing/Medikamen antar kunjungan (Ca(OH)2)`;
+    }
+  </script>
+</body>
+</html>
